@@ -90,6 +90,31 @@ private:
                                             " Z" << position['Z'] << std::endl;
     }
 
+    void add_line(std::unique_ptr<Line> &&line) {
+        auto start = line->start;
+        auto end = line->end;
+        if (position['Z'] < 0 && active) { // shape already exist
+            if (points.count(start)) {
+                auto shape_ptr = points.at(start);
+                shape_ptr->add_line(std::move(line));
+                points.erase(start);
+                if (points.count(end)) {
+                    points.erase(end);
+                    return;
+                }
+                points.emplace(end, shape_ptr);
+            } else { // new_shape
+                shapes.push_back(Shape{});
+                auto shape_ptr = &shapes.back();
+                shape_ptr->add_line(std::move(line));
+                points.emplace(start, shape_ptr);
+                points.emplace(end, shape_ptr);
+            }
+        }
+        position['X'] = end.x;
+        position['Y'] = end.y;
+    }
+
     void g01(const CommandParams &ps) {
         if (ps.count('Z')) {
             position['Z'] = ps.at('Z');
@@ -100,26 +125,7 @@ private:
             auto line = std::make_unique<Line>();
             line->start = start;
             line->end = end;
-            if (position['Z'] < 0 && active) { // shape already exist
-                if (points.count(start)) {
-                    auto shape_ptr = points.at(start);
-                    shape_ptr->add_line(std::move(line));
-                    points.erase(start);
-                    if (points.count(end)) {
-                        points.erase(end);
-                        return;
-                    }
-                    points.emplace(end, shape_ptr);
-                } else { // new_shape
-                    shapes.push_back(Shape{});
-                    auto shape_ptr = &shapes.back();
-                    shape_ptr->add_line(std::move(line));
-                    points.emplace(start, shape_ptr);
-                    points.emplace(end, shape_ptr);
-                }
-            }
-            position['X'] = end.x;
-            position['Y'] = end.y;
+            add_line(std::move(line));
         }
         std::cout << "[INFO] Moving tool to position: X" << position['X'] <<
                                                     " Y" << position['Y'] <<
@@ -137,26 +143,7 @@ private:
         line->center.x = start.x + i;
         line->center.y = start.y + j;
         line->clockwise = true;
-        if (position['Z'] < 0 && active) { // shape already exist
-            if (points.count(start)) {
-                auto shape_ptr = points.at(start);
-                shape_ptr->add_line(std::move(line));
-                points.erase(start);
-                if (points.count(end)) {
-                    points.erase(end);
-                    return;
-                }
-                points.emplace(end, shape_ptr);
-            } else { // new_shape
-                shapes.push_back(Shape{});
-                auto shape_ptr = &shapes.back();
-                shape_ptr->add_line(std::move(line));
-                points.emplace(start, shape_ptr);
-                points.emplace(end, shape_ptr);
-            }
-        }
-        position['X'] = end.x;
-        position['Y'] = end.y;
+        add_line(std::move(line));
     }
 
     void g03(const CommandParams &ps) {
@@ -170,26 +157,7 @@ private:
         line->center.x = start.x + i;
         line->center.y = start.y + j;
         line->clockwise = false;
-        if (position['Z'] < 0 && active) { // shape already exist
-            if (points.count(start)) {
-                auto shape_ptr = points.at(start);
-                shape_ptr->add_line(std::move(line));
-                points.erase(start);
-                if (points.count(end)) {
-                    points.erase(end);
-                    return;
-                }
-                points.emplace(end, shape_ptr);
-            } else { // new_shape
-                shapes.push_back(Shape{});
-                auto shape_ptr = &shapes.back();
-                shape_ptr->add_line(std::move(line));
-                points.emplace(start, shape_ptr);
-                points.emplace(end, shape_ptr);
-            }
-        }
-        position['X'] = end.x;
-        position['Y'] = end.y;
+        add_line(std::move(line));
     }
 
     void g28(const CommandParams &ps) {
