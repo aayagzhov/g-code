@@ -56,7 +56,7 @@ public:
     }
 
     void draw(const std::string& filename) {
-        BMPImage img(500, 500);
+        BMPImage img(300, 300);
         for (auto &shape : shapes) {
             shape.draw(img);
         }
