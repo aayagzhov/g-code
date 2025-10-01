@@ -56,7 +56,7 @@ public:
     }
 
     void draw(const std::string& filename) {
-        BMPImage img(300, 300);
+        BMPImage img(500, 500);
         for (auto &shape : shapes) {
             shape.draw(img);
         }
@@ -212,17 +212,16 @@ private:
     };
 
     std::unordered_map<std::string, std::function<void(const CommandParams &ps)>> commands {
-        // работа в абсолютных координатах, единиц ыизмерения мм, плоскость XY,
-        // сверлит только при Z < 0;
-        {"G21", [this](const CommandParams &ps){ empty(ps); }},   // Быстрое позиционирование
-        {"G90", [this](const CommandParams &ps){ empty(ps); }},   // Быстрое позиционирование
-        {"G00", [this](const CommandParams &ps){ g00(ps); }},   // Быстрое позиционирование
-        {"G01", [this](const CommandParams &ps){ g01(ps); }},   // Линейная интерполяция
-        {"G02", [this](const CommandParams &ps){ g02(ps); }},   // Круговая интерполяция (движение по часовой сьрелке)
-        {"G03", [this](const CommandParams &ps){ g03(ps); }},   // Круговая интерполяция (движение против часовой стрелки)
-        {"G28", [this](const CommandParams &ps){ g28(ps); }},   // Возврат в нулевую точку
-        {"M03", [this](const CommandParams &ps){ m03(ps); }},   // Включить шпиндель
-        {"M05", [this](const CommandParams &ps){ m05(ps); }},   // Выключить шпиндель
-        {"M30", [this](const CommandParams &ps){ m30(ps); }}    // Выключение программы
+
+        {"G21", [this](const CommandParams &ps){ empty(ps); }},
+        {"G90", [this](const CommandParams &ps){ empty(ps); }},
+        {"G00", [this](const CommandParams &ps){ g00(ps); }},
+        {"G01", [this](const CommandParams &ps){ g01(ps); }},
+        {"G02", [this](const CommandParams &ps){ g02(ps); }},
+        {"G03", [this](const CommandParams &ps){ g03(ps); }},
+        {"G28", [this](const CommandParams &ps){ g28(ps); }},
+        {"M03", [this](const CommandParams &ps){ m03(ps); }},
+        {"M05", [this](const CommandParams &ps){ m05(ps); }},
+        {"M30", [this](const CommandParams &ps){ m30(ps); }}
     };
 };
